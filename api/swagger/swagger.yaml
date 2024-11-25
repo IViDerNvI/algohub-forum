@@ -1,0 +1,214 @@
+openapi: 3.0.3
+info:
+  title: algohub api
+  description: algohub backend api 
+  contact:
+    email: ividernvi@outlook.com
+  license:
+    name: MIT
+    url: https://mit-license.org/
+  version: 0.1.0
+servers:
+  - url: https://localhost:8089/v1
+tags:
+  - name: user
+    description: Operations about user
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegiste'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/{username}:
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'          
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: update successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: user not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+        '500':
+          description: databse save failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+        '400':
+          description: Invalid username supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+components:
+  schemas:
+    OK:
+      type: string
+      example: OK
+    ErrCode:
+      type: object
+      properties:
+        errcode:
+          type: integer
+          format: int64
+          example: 000000
+        httpstatus:
+          type: integer
+          format: int64
+          example: 200
+        message:
+          type: string
+          example: "OK"
+        refer:
+          type: string
+          example: "ok"
+    UserRegiste:
+      type: object
+      properties:
+        username:
+          type: string
+          example: john
+        password:
+          type: string
+          example: '12345'
+        email:
+          type: string
+          example: john@email.com
+    User:
+      type: object
+      properties:
+        instanceID:
+          type: string
+          example: user-df0b62cc-ebb3-435a-866b-52258ecb8db1
+        name: 
+          type: string
+          example: john@857
+        createdAt:
+          type: string
+          example: 2024-11-25T12:04:40.346+08:00
+        updatedAt:
+          type: string
+          example: 2024-11-25T12:04:40.346+08:00
+        deletedAt:
+          type: string
+          example: null
+        username:
+          type: string
+          example: john
+        password:
+          type: string
+          example: '12345'
+        email:
+          type: string
+          example: john@email.com
+        status:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1

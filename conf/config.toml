@@ -1,0 +1,44 @@
+[server]
+
+mode = "release"
+healthz = true
+middlewares = []
+
+[grpc]
+
+bind-address = "0.0.0.0"
+bind-port = 8081
+
+[insecure]
+
+bind-address = "127.0.0.1"
+bind-port = "8080"
+
+[secure]
+
+bind-address = "127.0.0.1"
+bind-port = "8443"
+ssl = { cert_file = "cert.pem", private_key_file = "key.pem" }
+
+[mysql]
+
+host = "127.0.0.1"
+username = "root"
+password = "root"
+database = "algohub"
+
+[redis]
+
+host = "127.0.0.1"
+port = 6379
+username = "root"
+password = "root"
+database = 0
+timeout = 0
+
+[jwt]
+
+realm = "algohub jwt"
+key = ""
+timeout = "1h"
+max-refresh = "1h"

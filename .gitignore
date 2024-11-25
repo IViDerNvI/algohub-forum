@@ -23,3 +23,12 @@ go.work.sum
 
 # env file
 .env
+
+# test file
+test/
+
+# build file
+build/
+
+# macOS file
+.DS_Store

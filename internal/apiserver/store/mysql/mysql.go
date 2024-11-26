@@ -70,12 +70,20 @@ func cleanDatabase(db *gorm.DB) error {
 		return errors.Wrap(err, "drop user table failed")
 	}
 
+	if err := db.Migrator().DropTable(&model.Post{}); err != nil {
+		return errors.Wrap(err, "drop post table failed")
+	}
+
 	return nil
 }
 
 func migrateDatabase(db *gorm.DB) error {
 	if err := db.AutoMigrate(&model.User{}); err != nil {
 		return errors.Wrap(err, "migrate user model failed")
+	}
+
+	if err := db.AutoMigrate(&model.Post{}); err != nil {
+		return errors.Wrap(err, "migrate post model failed")
 	}
 
 	return nil

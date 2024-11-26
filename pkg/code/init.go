@@ -6,6 +6,7 @@ func init() {
 	normalCodeRegiste()
 	userCodeRegiste()
 	dbCodeRegiste()
+	postCodeRegiste()
 }
 
 func normalCodeRegiste() {
@@ -24,4 +25,10 @@ func userCodeRegiste() {
 func dbCodeRegiste() {
 	errors.Registe(ERROR_DATABASE_INSERT_FAILED, 500, "database error", "dbfailed")
 	errors.Registe(ERROR_DATABASE_SAVE_FAILED, 500, "database save failed", "dbsavefail")
+	errors.Registe(ERROR_DATABASE_DELETE_FAILED, 500, "database delete failed", "dbdeletefail")
+}
+
+func postCodeRegiste() {
+	errors.Registe(ERROR_POST_BIND_FAILED, 500, "json format error", "bindfailed")
+	errors.Registe(ERROR_POST_NOT_EXISTS, 404, "post not exists", "postnotexists")
 }

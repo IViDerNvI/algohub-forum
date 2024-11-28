@@ -1,9 +1,12 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"sync"
+	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/ividernvi/algohub-forum/internal/apiserver/store"
 	"github.com/ividernvi/algohub-forum/internal/model"
 	"github.com/ividernvi/algohub-forum/internal/model/options"
@@ -14,7 +17,8 @@ import (
 )
 
 type datastore struct {
-	db *gorm.DB
+	db  *gorm.DB
+	rdb *redis.Client
 }
 
 func (ds *datastore) Users() store.UserStore {
@@ -25,13 +29,20 @@ func (ds *datastore) Posts() store.PostStore {
 	return newPosts(ds)
 }
 
+func (ds *datastore) Likes() store.LikeStore {
+	return newLikes(ds)
+}
+
+func (ds *datastore) Tokens() store.TokenStore {
+	return newTokens(ds)
+}
+
 func (ds *datastore) Close() error {
-	db, err := ds.db.DB()
+	_, err := ds.db.DB()
 	if err != nil {
 		return errors.Wrap(err, "get gorm db instance failed")
 	}
-
-	return db.Close()
+	return ds.rdb.Close()
 }
 
 var (
@@ -55,7 +66,19 @@ func GetMySQLFactoryOr(opts options.MYSQLOptions) (store.Factory, error) {
 		}
 		cleanDatabase(db)
 		migrateDatabase(db)
-		mysqlFactory = &datastore{db}
+
+		rdb := redis.NewClient(&redis.Options{
+			Addr:         fmt.Sprintf("%s:%d", "127.0.0.1", 6379), // Redis服务地址
+			Password:     "",                                      // 密码
+			DB:           0,                                       // 默认数据库
+			ReadTimeout:  time.Second * 15,
+			WriteTimeout: time.Second * 15,
+		})
+
+		mysqlFactory = &datastore{
+			db:  db,
+			rdb: rdb,
+		}
 	})
 
 	if mysqlFactory == nil || err != nil {
@@ -65,6 +88,17 @@ func GetMySQLFactoryOr(opts options.MYSQLOptions) (store.Factory, error) {
 	return mysqlFactory, nil
 }
 
+func flushRedis(rdb *redis.Client) error {
+	var ctx context.Context
+	err := rdb.FlushDB(ctx).Err()
+	if err != nil {
+		logrus.Println("Failed to flush database:", err)
+		return err
+	}
+
+	return nil
+}
+
 func cleanDatabase(db *gorm.DB) error {
 	if err := db.Migrator().DropTable(&model.User{}); err != nil {
 		return errors.Wrap(err, "drop user table failed")
@@ -72,6 +106,10 @@ func cleanDatabase(db *gorm.DB) error {
 
 	if err := db.Migrator().DropTable(&model.Post{}); err != nil {
 		return errors.Wrap(err, "drop post table failed")
+	}
+
+	if err := db.Migrator().DropTable(&model.Like{}); err != nil {
+		return errors.Wrap(err, "drop like table failed")
 	}
 
 	return nil
@@ -84,6 +122,10 @@ func migrateDatabase(db *gorm.DB) error {
 
 	if err := db.AutoMigrate(&model.Post{}); err != nil {
 		return errors.Wrap(err, "migrate post model failed")
+	}
+
+	if err := db.Migrator().DropTable(&model.Like{}); err != nil {
+		return errors.Wrap(err, "drop like table failed")
 	}
 
 	return nil

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "algohub-forum/internal/apiserver/service";
+
+message AccPasswd {
+    string username = 1;
+    string password = 2;
+}
+
+message VerifiedResult {
+    bool is_verified = 1;
+}
+
+service Verify {
+    rpc VerifyUser(AccPasswd) returns (VerifiedResult);
+}

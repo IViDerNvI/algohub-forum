@@ -23,25 +23,30 @@ func installController(g *gin.Engine) *gin.Engine {
 	storeIns, _ := mysql.GetMySQLFactoryOr(*options.NewDBOptions())
 	v1 := g.Group("/v1")
 	{
+
 		userv1 := v1.Group("/users")
 		{
 			userController := user.NewUserController(storeIns)
 
 			userv1.POST("", userController.Create)
-			userv1.PUT(":name", userController.Update)
+			userv1.PUT(":name", userController.CheckLogin, userController.Update)
 			userv1.GET(":name", userController.Get)
-			userv1.DELETE(":name", userController.Delete)
+			userv1.DELETE(":name", userController.CheckLogin, userController.Delete)
+
+			v1.POST("/login", userController.Login)
+			v1.POST("/logout", userController.Logout)
 
 		}
 
 		postv1 := v1.Group("/posts")
 		{
 			postController := post.NewPostController(storeIns)
+			userController := user.NewUserController(storeIns)
 
-			postv1.POST("", postController.Create)
-			postv1.PUT(":id", postController.Update)
+			postv1.POST("", userController.CheckLogin, postController.Create)
+			postv1.PUT(":id", userController.CheckLogin, postController.Update)
 			postv1.GET(":id", postController.Get)
-			postv1.DELETE(":id", postController.Delete)
+			postv1.DELETE(":id", userController.CheckLogin, postController.Delete)
 		}
 	}
 	return g

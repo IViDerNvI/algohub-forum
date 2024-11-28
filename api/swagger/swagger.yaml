@@ -14,6 +14,44 @@ tags:
   - name: user
     description: Operations about user
 paths:
+  /login:
+    post:
+      tags:
+        - log
+      summary: Log in user
+      description: test
+      operationId: loginUser
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: login successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+  /logout:
+    post:
+      tags:
+        - log
+      summary: Log out user
+      description: Logs out the user and invalidates the session.
+      operationId: logoutUser
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
   /user:
     post:
       tags:
@@ -118,7 +156,7 @@ paths:
       tags:
         - user
       summary: Delete user
-      description: This can only be done by the logged in user.
+      description: This can only be done by the admin.
       operationId: deleteUser
       parameters:
         - name: username
@@ -146,11 +184,249 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrCode'
+  /user/{username}/likes:
+    get:
+      tags:
+        - user
+        - like
+      summary: Get likes
+      description: This only can be done by logged in user.
+      operationId: getUserLike
+      parameters:
+        - name: username
+          in: path
+          description: username that need to be verified
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Likelist'
+  /user/{username}/likes/{itemid}:
+    delete:
+      tags:
+        - user
+        - like
+      summary: delete like by itemid
+      description: This only can be done by logged in user.
+      operationId: deleteUserLike
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+  /posts:
+    post:
+      tags:
+        - post
+      summary: Create post 
+      description: This can only be done by the logged in user.
+      operationId: createPost
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '200':
+          description: Create successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Create failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+  /posts/{postid}:
+    get:
+      tags:
+        - post
+      summary: Get post
+      description: This can be done by any user.
+      operationId: getPost
+      parameters:
+        - name: postid
+          in: path
+          description: id that need to be got
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    put:
+      tags:
+        - post
+      summary: Update post
+      description: This can only be done by the logged in user.
+      operationId: updatePost
+      parameters:
+        - name: postid
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update post object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '200':
+          description: Create successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    delete:
+      tags: 
+        - post
+      summary: Delete post
+      description: This can only be done by the logged in user.
+      operationId: deletePost
+      parameters:
+        - name: postid
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'  
+        '404':
+          description: Cannot find post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'  
+  /posts/{postid}/likes:
+    post:
+      tags:
+        - like
+        - post
+      summary: Create like for a post
+      description: This can only be done by the logged in user. backend will check jwt token to decide who create it.
+      operationId: createPostLike
+      parameters:
+        - name: postid
+          in: path
+          required: true
+          description: post id that need to be liked
+          schema:
+            type: string
+      responses:
+        '200':
+          description: like post successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+    delete:
+      tags:
+        - like
+        - post
+      summary: Delete like for a post
+      description: This can only be done by the logged in user. backend will check jwt token to decide who delete it.
+      operationId: deletePostLike
+      parameters:
+        - name: postid
+          in: path
+          required: true
+          description: post id that need to be delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: like post successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+    get:
+      tags:
+        - like
+        - post
+      summary: Get like which is user commit
+      description: This can only be done by the logged in user. 
+      operationId: getUserPostLike
+      parameters:
+        - name: postid
+          in: path
+          required: true
+          description: post id that need to be delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: like post successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrCode'
+        
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
+    Post:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "POST TITLE"
+        content:
+          type: string
+          example: "post content"
+        userid:
+          type: string
+          example: "user-f72731e1-61bf-4496-a618-f25393d427db"
     OK:
       type: string
       example: OK
+    Likelist:
+      type: object
+      properties:
+        total_count:
+          type: integer
+          format: int64
+          example: 1023
     ErrCode:
       type: object
       properties:

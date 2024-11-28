@@ -5,6 +5,8 @@ var client Factory
 type Factory interface {
 	Users() UserStore
 	Posts() PostStore
+	Likes() LikeStore
+	Tokens() TokenStore
 	Close() error
 }
 

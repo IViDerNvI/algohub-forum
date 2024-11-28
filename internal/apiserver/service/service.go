@@ -5,6 +5,8 @@ import "github.com/ividernvi/algohub-forum/internal/apiserver/store"
 type Service interface {
 	Users() UserSrv
 	Posts() PostSrv
+	Likes() LikeSrv
+	Tokens() TokenSrv
 }
 
 type service struct {
@@ -21,4 +23,12 @@ func (srv *service) Users() UserSrv {
 
 func (srv *service) Posts() PostSrv {
 	return newPostSrv(srv)
+}
+
+func (srv *service) Likes() LikeSrv {
+	return newLikeSrv(srv)
+}
+
+func (srv *service) Tokens() TokenSrv {
+	return newTokenSrc(srv)
 }

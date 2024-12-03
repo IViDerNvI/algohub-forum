@@ -14,10 +14,10 @@ const (
 
 type User struct {
 	ObjectMeta
-	Username   string `json:"username,omitempty" gorm:"column:username"`
+	Username   string `json:"username,omitempty" gorm:"index;column:username;unique"`
 	Password   string `json:"password,omitempty" gorm:"column:password"`
-	Email      string `json:"email,omitempty" gorm:"column:email"`
-	TotalScore int    `json:"totalscore,omitempty" gorm:"column:totalScore"`
+	Email      string `json:"email,omitempty" gorm:"index;column:email"`
+	TotalScore int    `json:"totalscore,omitempty" gorm:"index;column:totalScore"`
 	Status     int    `json:"status,omitempty" gorm:"column:status"`
 }
 

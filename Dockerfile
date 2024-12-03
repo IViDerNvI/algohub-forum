@@ -1,9 +1,9 @@
-FROM golang:1.20 AS builder
+FROM golang:1.23 AS builder
 
 WORKDIR /algohub
-COPY go.mod go.sum ./
+COPY ./* ./
 
-RUN go mod download
+RUN go mod tidy
 COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o build/algohub .

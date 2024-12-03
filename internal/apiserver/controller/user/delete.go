@@ -16,7 +16,12 @@ func (uc UserController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	uc.Usrv.Users().DeleteByUsername(ctx, username, model.DeleteOptions{})
+	err := uc.Usrv.Users().DeleteByUsername(ctx, username, model.DeleteOptions{})
+	if err != nil {
+		core.WriteResponse(ctx, code.ERROR_DATABASE_DELETE_FAILED, nil)
+		return
+	}
+
 	core.WriteResponse(ctx, code.ERROR_OK, "OK")
 	return
 }

@@ -6,4 +6,5 @@ func init() {
 
 func registeMiddlewares() {
 	registe("logger", LogMiddleware())
+	registe("cors", CorsMiddleware())
 }

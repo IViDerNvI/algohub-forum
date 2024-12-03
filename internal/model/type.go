@@ -46,7 +46,9 @@ type UpdateOptions struct {
 type ListOptions struct {
 	TypeMeta `json:",inline"`
 
-	TimeoutSeconds *int64 `json:"timeoutSeconds,omitempty"`
-	Offset         *int64 `json:"offset,omitempty" form:"offset"`
-	Limit          *int64 `json:"limit,omitempty" form:"limit"`
+	QueryKey       string `json:"query,omitempty"`
+	Pattern        string `json:"pattern,omitempty"`
+	TimeoutSeconds int64  `json:"timeoutSeconds,omitempty"`
+	Offset         int64  `json:"offset,omitempty" form:"offset"`
+	Limit          int64  `json:"limit,omitempty" form:"limit"`
 }

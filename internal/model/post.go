@@ -2,23 +2,16 @@ package model
 
 type Post struct {
 	ObjectMeta
-	Id         int
-	UserId     int
-	Content    string
-	LikeCnt    int
-	BadCnt     int
-	Title      string
-	PostTime   string
-	CommentCnt int
-}
-
-type PostLike struct {
-	ObjectMeta
-	UserId int
-	PostId int
+	UserId  string `json:"userid" gorm:"column:userid"`
+	Content string `json:"content" gorm:"column:content"`
+	Title   string `json:"title" gorm:"column:title"`
 }
 
 type PostList struct {
 	ListMeta
 	Items []Post
+}
+
+func (p *Post) GetDatabaseName() string {
+	return "post"
 }

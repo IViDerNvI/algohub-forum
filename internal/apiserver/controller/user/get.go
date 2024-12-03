@@ -13,11 +13,6 @@ func (uc UserController) Get(ctx *gin.Context) {
 
 	username := ctx.Param("name")
 
-	if username == "" {
-		core.WriteResponse(ctx, code.ERROR_PARAMETER_MISSING, nil)
-		return
-	}
-
 	if user, err := uc.Usrv.Users().GetByAccount(ctx, username, model.GetOptions{}); err != nil {
 		core.WriteResponse(ctx, code.ERROR_USER_NOT_EXISTS, nil)
 		return

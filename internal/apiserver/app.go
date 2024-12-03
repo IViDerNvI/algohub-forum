@@ -6,7 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func PrepareRun(cmd *cobra.Command, args []string) {
+
+}
+
 func ServerRun(cmd *cobra.Command, args []string) {
+	runGRPC()
 	opts := options.NewOptions()
 	cfg := model.NewConfigFromOptions(opts)
 
@@ -15,5 +20,6 @@ func ServerRun(cmd *cobra.Command, args []string) {
 }
 
 var ServerCmd = &cobra.Command{
-	Run: ServerRun,
+	PreRun: PrepareRun,
+	Run:    ServerRun,
 }

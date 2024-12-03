@@ -4,7 +4,10 @@ import "github.com/ividernvi/algohub-forum/internal/apiserver/store"
 
 type Service interface {
 	Users() UserSrv
-	// PostSrv() PostSrc
+	Posts() PostSrv
+	Likes() LikeSrv
+	Tokens() TokenSrv
+	Problems() ProbSrv
 }
 
 type service struct {
@@ -17,4 +20,20 @@ func NewService(store store.Factory) Service {
 
 func (srv *service) Users() UserSrv {
 	return newUserSrv(srv)
+}
+
+func (srv *service) Posts() PostSrv {
+	return newPostSrv(srv)
+}
+
+func (srv *service) Likes() LikeSrv {
+	return newLikeSrv(srv)
+}
+
+func (srv *service) Tokens() TokenSrv {
+	return newTokenSrc(srv)
+}
+
+func (srv *service) Problems() ProbSrv {
+	return newProbSrv(srv)
 }

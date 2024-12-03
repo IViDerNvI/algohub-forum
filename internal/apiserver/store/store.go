@@ -7,6 +7,7 @@ type Factory interface {
 	Posts() PostStore
 	Likes() LikeStore
 	Tokens() TokenStore
+	Problems() ProbStore
 	Close() error
 }
 

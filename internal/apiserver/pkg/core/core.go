@@ -33,7 +33,7 @@ func GetAuthenticationHeader(c *gin.Context) (username, password string) {
 }
 
 func WriteResponse(c *gin.Context, errcode int, data interface{}) {
-	if errcode != 0 {
+	if errcode != 0 || data == nil {
 		err := errors.Parse(errcode)
 		logrus.Errorf(err.String())
 		c.JSON(err.HTTPStatus(), err)

@@ -7,6 +7,7 @@ type Service interface {
 	Posts() PostSrv
 	Likes() LikeSrv
 	Tokens() TokenSrv
+	Problems() ProbSrv
 }
 
 type service struct {
@@ -31,4 +32,8 @@ func (srv *service) Likes() LikeSrv {
 
 func (srv *service) Tokens() TokenSrv {
 	return newTokenSrc(srv)
+}
+
+func (srv *service) Problems() ProbSrv {
+	return newProbSrv(srv)
 }

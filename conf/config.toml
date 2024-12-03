@@ -39,6 +39,6 @@ timeout = 0
 [jwt]
 
 realm = "algohub jwt"
-key = ""
-timeout = "1h"
-max-refresh = "1h"
+key = "helloworld"
+timeout = "2h"
+max-refresh = "2h"

@@ -34,8 +34,8 @@ func (ps *postStore) DeleteById(ctx context.Context, id string, opt model.Delete
 func (ps *postStore) List(ctx context.Context, title string, opt model.ListOptions) (*model.PostList, error) {
 	ret := &model.PostList{}
 	d := ps.db.Where("title like ?", title).
-		Offset(int(*opt.Offset)).
-		Limit(int(*opt.Limit)).
+		Offset(int(opt.Offset)).
+		Limit(int(opt.Limit)).
 		Order("id desc").
 		Find(&ret.Items).
 		Offset(-1).

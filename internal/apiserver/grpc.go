@@ -26,14 +26,16 @@ var (
 
 func (s *grpcserver) VerifyUser(ctx context.Context, in *pb.AccPasswd) (out *pb.VerifiedResult, err error) {
 	logrus.Printf("VerifyUser called")
-	user, err := srv.Users().GetByAccount(ctx, in.Username, model.GetOptions{})
-	if err != nil {
-		logrus.Printf("grpc: get user failed", err)
-		return nil, err
+	var user *model.User
+	if user, err = srv.Users().GetByAccount(ctx, in.Username, model.GetOptions{}); err != nil {
+		logrus.Printf("grpc: get user failed: \033[1;31;40m%s\033[0m\n", err)
+		return &pb.VerifiedResult{
+			IsVerified: false,
+		}, nil
 	}
 
 	if auth.Compare(user.Password, in.Password) != nil {
-		logrus.Printf("check failed: %s", err)
+		logrus.Printf("verified failed: %s", err)
 		return &pb.VerifiedResult{
 			IsVerified: false,
 		}, nil

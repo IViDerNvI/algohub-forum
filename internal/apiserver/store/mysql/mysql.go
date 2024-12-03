@@ -37,6 +37,10 @@ func (ds *datastore) Tokens() store.TokenStore {
 	return newTokens(ds)
 }
 
+func (ds *datastore) Problems() store.ProbStore {
+	return newProblems(ds)
+}
+
 func (ds *datastore) Close() error {
 	_, err := ds.db.DB()
 	if err != nil {
@@ -112,6 +116,10 @@ func cleanDatabase(db *gorm.DB) error {
 		return errors.Wrap(err, "drop like table failed")
 	}
 
+	if err := db.Migrator().DropTable(&model.Problem{}); err != nil {
+		return errors.Wrap(err, "drop prob table failed")
+	}
+
 	return nil
 }
 
@@ -124,8 +132,12 @@ func migrateDatabase(db *gorm.DB) error {
 		return errors.Wrap(err, "migrate post model failed")
 	}
 
-	if err := db.Migrator().DropTable(&model.Like{}); err != nil {
-		return errors.Wrap(err, "drop like table failed")
+	if err := db.AutoMigrate(&model.Like{}); err != nil {
+		return errors.Wrap(err, "migrate like table failed")
+	}
+
+	if err := db.AutoMigrate(&model.Problem{}); err != nil {
+		return errors.Wrap(err, "migrate prob table failed")
 	}
 
 	return nil

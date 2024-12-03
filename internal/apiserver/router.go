@@ -3,6 +3,7 @@ package apiserver
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ividernvi/algohub-forum/internal/apiserver/controller/post"
+	"github.com/ividernvi/algohub-forum/internal/apiserver/controller/problem"
 	"github.com/ividernvi/algohub-forum/internal/apiserver/controller/user"
 	"github.com/ividernvi/algohub-forum/internal/apiserver/middleware"
 	"github.com/ividernvi/algohub-forum/internal/apiserver/store/mysql"
@@ -16,6 +17,7 @@ func InitRouter(g *gin.Engine) {
 
 func installMiddleware(g *gin.Engine) *gin.Engine {
 	middleware.MustInstall("logger", g)
+	middleware.MustInstall("cors", g)
 	return g
 }
 
@@ -31,6 +33,7 @@ func installController(g *gin.Engine) *gin.Engine {
 			userv1.POST("", userController.Create)
 			userv1.PUT(":name", userController.CheckLogin, userController.Update)
 			userv1.GET(":name", userController.Get)
+			userv1.GET("", userController.List)
 			userv1.DELETE(":name", userController.CheckLogin, userController.Delete)
 
 			v1.POST("/login", userController.Login)
@@ -47,6 +50,14 @@ func installController(g *gin.Engine) *gin.Engine {
 			postv1.PUT(":id", userController.CheckLogin, postController.Update)
 			postv1.GET(":id", postController.Get)
 			postv1.DELETE(":id", userController.CheckLogin, postController.Delete)
+		}
+
+		probv1 := v1.Group("/problems")
+		{
+			probController := problem.NewProblemController(storeIns)
+
+			probv1.POST("", probController.Create)
+			probv1.GET("", probController.List)
 		}
 	}
 	return g

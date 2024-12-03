@@ -23,6 +23,12 @@ func (uc UserController) Create(ctx *gin.Context) {
 		return
 	}
 
+	if err := u.Validate(); err != nil {
+		logrus.Printf("user invalid: %s", err)
+		core.WriteResponse(ctx, code.ERROR_USER_USERNAME_INVALID, nil)
+		return
+	}
+
 	u.ObjectMeta.InstanceID = idutil.GenerateUUID(u.GetDatabaseName())
 	u.ObjectMeta.Name = u.Username
 	u.ObjectMeta.CreatedAt = time.Now()

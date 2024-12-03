@@ -45,15 +45,27 @@ func (us *userStore) DeleteByUsername(ctx context.Context, username string, opt 
 
 func (us *userStore) List(ctx context.Context, username string, opt model.ListOptions) (*model.UserList, error) {
 	ret := &model.UserList{}
-	d := us.db.Where("name like ?", username).
-		Offset(int(*opt.Offset)).
-		Limit(int(*opt.Limit)).
+
+	// 先计算总数
+	var totalCount int64
+	d := us.db.Model(&model.User{}).Where("username like ?", "%"+opt.Pattern+"%").Count(&totalCount)
+	if d.Error != nil {
+		return nil, d.Error
+	}
+	ret.TotalCount = totalCount
+
+	// 应用分页和排序
+	d = us.db.Where("username like ?", "%"+opt.Pattern+"%").
+		Offset(int(opt.Offset)).
+		Limit(int(opt.Limit)).
 		Order("id desc").
-		Find(&ret.Users).
-		Offset(-1).
-		Limit(-1).
-		Count(&ret.TotalCount)
-	return ret, d.Error
+		Find(&ret.Users)
+
+	if d.Error != nil {
+		return nil, d.Error
+	}
+
+	return ret, nil
 }
 
 func newUsers(ds *datastore) *userStore {
